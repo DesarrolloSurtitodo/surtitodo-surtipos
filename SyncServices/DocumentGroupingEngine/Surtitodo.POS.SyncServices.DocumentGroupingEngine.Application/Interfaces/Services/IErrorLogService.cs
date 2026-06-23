@@ -8,7 +8,6 @@
         Task<string> LogErrorAsync(
             string numAtCard,
             Exception exception,
-            string context,
             CancellationToken ct = default);
     }
 }

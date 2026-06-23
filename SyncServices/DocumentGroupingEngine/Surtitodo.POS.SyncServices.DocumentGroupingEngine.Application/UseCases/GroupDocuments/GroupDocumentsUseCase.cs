@@ -2,6 +2,7 @@
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Persistence.Target;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Services;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Mappers;
+using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping;
 using groupingEngine = Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping.DocumentGroupingEngine;
 
 namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases.GroupDocuments
@@ -20,34 +21,52 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases
         {
             // 1. Leer candidatos
             var candidates = await _documentsRepo.GetCandidatesAsync(ct);
+            if (candidates is null) return;
 
             // 2. Agrupar — lógica de dominio pura
             var group = groupingEngine.BuildNextGroup(candidates);
             if (group is null) return;
 
-            // 3. Leer líneas agrupadas
-            var lines = await _linesRepo.GetGroupedLinesAsync(group.MemberKeys, group.BOCODI, group.CACODI, group.TIPDOC, ct);
-
-            // 4. Construir NumAtCard — el sequence viene del repositorio target
+            // 3. Generar NumAtCard antes de cualquier operación riesgosa
             var numAtCard = DocumentGroupMapper.BuildNumAtCard(group.TIPDOC, group.BOCODI, group.CACODI);
 
-            // 5. Mapear
-            var targetDoc = DocumentGroupMapper.ToTarget(group, lines, numAtCard);
+            try
+            {
+                // 4. Leer líneas del grupo
+                var lines = await _linesRepo.GetGroupedLinesAsync(
+                    group.MemberKeys, group.BOCODI, group.CACODI, group.TIPDOC, ct);
 
-            // 6. Persistir con atomicidad
-            await _unitOfWork.BeginAsync(ct);
-            var groupedId = await _unitOfWork.GroupedDocuments.InsertAsync(targetDoc, ct);
-            await _unitOfWork.CommitAsync(ct);
+                // 5. Mapear Source → Target
+                var targetDoc = DocumentGroupMapper.ToTarget(group, lines, numAtCard);
 
-            // 7. Actualizar Source — fuera de la transacción Target (son BDs distintas)
-            await _documentsRepo.UpdateGroupStatusAsync(
-                group.MemberKeys,
-                group.BOCODI, group.CACODI, group.TIPDOC,
-                statusCode: "A",
-                groupedDocumentId: groupedId,
-                message: null,
-                logFile: null,
-                ct: ct);
+                // 6. Persistir con atomicidad
+                await _unitOfWork.BeginAsync(ct);
+                var groupedId = await _unitOfWork.GroupedDocuments.InsertAsync(targetDoc, ct);
+                await _unitOfWork.CommitAsync(ct);
+
+                // 7. Actualizar Source — fuera de la transacción Target
+                await _documentsRepo.UpdateGroupStatusAsync(
+                    group.MemberKeys,
+                    group.BOCODI, group.CACODI, group.TIPDOC,
+                    statusCode: "A",
+                    groupedDocumentId: groupedId,
+                    message: null,
+                    logFile: null,
+                    ct: ct);
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync(ct);
+
+                throw new GroupingException(
+                    message: ex.Message,
+                    numAtCard: numAtCard,
+                    memberKeys: group.MemberKeys,
+                    bocodi: group.BOCODI,
+                    cacodi: group.CACODI,
+                    tipdoc: group.TIPDOC,
+                    inner: ex);
+            }       
         }
     }
 }
