@@ -7,7 +7,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Servi
     public class ErrorLogService(ILogger<ErrorLogService> logger, IConfiguration config) : IErrorLogService
     {
         private readonly ILogger<ErrorLogService> _logger = logger;
-        private readonly string _logBasePath = config["Logging:ErrorLogPath"] ?? "logs/errors";
+        private readonly string _logBasePath = config["Paths:ErrorLogPath"] ?? "logs/errors";
 
         public async Task<string> LogErrorAsync(string numAtCard, Exception exception, CancellationToken ct = default)
         {

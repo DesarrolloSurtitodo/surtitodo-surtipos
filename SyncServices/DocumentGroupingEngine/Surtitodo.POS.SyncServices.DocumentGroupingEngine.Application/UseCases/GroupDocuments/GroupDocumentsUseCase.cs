@@ -33,22 +33,30 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases
             try
             {
                 // 4. Leer líneas del grupo
-                var lines = await _linesRepo.GetGroupedLinesAsync(
-                    group.MemberKeys, group.BOCODI, group.CACODI, group.TIPDOC, ct);
+                var lines = await _linesRepo.GetGroupedLinesAsync(group.MemberKeys, group.BOCODI, group.CACODI, group.TIPDOC, ct);
 
                 // 5. Mapear Source → Target
                 var targetDoc = DocumentGroupMapper.ToTarget(group, lines, numAtCard);
 
                 // 6. Persistir con atomicidad
                 await _unitOfWork.BeginAsync(ct);
-                var groupedId = await _unitOfWork.GroupedDocuments.InsertAsync(targetDoc, ct);
+
+                // AddAsync trackea la entidad pero aún no va a BD
+                await _unitOfWork.GroupedDocuments.InsertAsync(targetDoc, ct);
+
+                // SaveChanges + Commit → EF resuelve el Id
                 await _unitOfWork.CommitAsync(ct);
+
+                // Ahora sí el Id está disponible en la entidad trackeada
+                var groupedId = targetDoc.Id;
 
                 // 7. Actualizar Source — fuera de la transacción Target
                 await _documentsRepo.UpdateGroupStatusAsync(
                     group.MemberKeys,
-                    group.BOCODI, group.CACODI, group.TIPDOC,
-                    statusCode: "A",
+                    group.BOCODI, 
+                    group.CACODI, 
+                    group.TIPDOC,
+                    statusCode: "T",
                     groupedDocumentId: groupedId,
                     message: null,
                     logFile: null,

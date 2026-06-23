@@ -8,8 +8,7 @@ var builder = Host.CreateApplicationBuilder(args);
 
 // ── Serilog ──────────────────────────────────────────────────────────
 builder.Logging.ClearProviders();
-builder.Services.AddSerilog((ctx, lc) => lc
-    .ReadFrom.Configuration(builder.Configuration));
+builder.Services.AddSerilog((ctx, lc) => lc.ReadFrom.Configuration(builder.Configuration));
 
 // ── Capas ────────────────────────────────────────────────────────────
 builder.Services

@@ -4,6 +4,6 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfac
 {
     public interface IGroupedDocumentRepository
     {
-        Task<long> InsertAsync(DocumentAgroup document, CancellationToken ct = default);
+        Task InsertAsync(DocumentAgroup document, CancellationToken ct = default);
     }
 }
