@@ -30,7 +30,9 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Pipel
 
                 await _documentsRepo.UpdateGroupStatusAsync(
                     ex.MemberKeys,
-                    ex.Bocodi, ex.Cacodi, ex.Tipdoc,
+                    ex.Bocodi, 
+                    ex.Cacodi, 
+                    ex.Tipdoc,
                     statusCode: "E",
                     groupedDocumentId: null,
                     message: ex.InnerException?.Message ?? ex.Message,

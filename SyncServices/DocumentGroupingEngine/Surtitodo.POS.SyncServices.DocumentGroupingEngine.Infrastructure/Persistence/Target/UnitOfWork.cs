@@ -24,6 +24,11 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Persi
             await _ctx.DisposeAsync();
         }
 
+        public ValueTask DisposeAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task RollbackAsync(CancellationToken ct = default) => await _tx!.RollbackAsync(ct);
     }
 }

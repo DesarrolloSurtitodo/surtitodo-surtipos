@@ -58,7 +58,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases
                     group.TIPDOC,
                     statusCode: "T",
                     groupedDocumentId: groupedId,
-                    message: null,
+                    message: "Agrupación correcta",
                     logFile: null,
                     ct: ct);
             }
