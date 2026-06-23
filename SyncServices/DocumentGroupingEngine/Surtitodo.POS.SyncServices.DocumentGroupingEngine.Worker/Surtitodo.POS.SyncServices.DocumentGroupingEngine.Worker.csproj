@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-Surtitodo.POS.SyncServices.DocumentGroupingEngine.Worker-fd1d6f23-bbcf-4b0d-82c3-8669d255ede6</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application\Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.csproj" />
+    <ProjectReference Include="..\Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure\Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

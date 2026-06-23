@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application/Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.csproj" />
+  <Project Path="Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain/Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.csproj" />
+  <Project Path="Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure/Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.csproj" />
+  <Project Path="Surtitodo.POS.SyncServices.DocumentGroupingEngine.Worker/Surtitodo.POS.SyncServices.DocumentGroupingEngine.Worker.csproj" />
+</Solution>
