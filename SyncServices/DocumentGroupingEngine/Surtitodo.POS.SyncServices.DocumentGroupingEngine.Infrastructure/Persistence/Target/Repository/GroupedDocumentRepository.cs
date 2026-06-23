@@ -9,7 +9,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Persi
 
         public async Task InsertAsync(DocumentAgroup document, CancellationToken ct = default)
         {
-            await _ctx.DocumentAgroups.AddAsync(document, ct);
+            await _ctx.DocumentAgroup.AddAsync(document, ct);
         }
     }
 }

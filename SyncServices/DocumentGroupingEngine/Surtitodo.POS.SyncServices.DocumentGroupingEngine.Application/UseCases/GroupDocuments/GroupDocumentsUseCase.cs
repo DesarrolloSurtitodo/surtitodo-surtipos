@@ -30,6 +30,8 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases
             // 3. Generar NumAtCard antes de cualquier operación riesgosa
             var numAtCard = DocumentGroupMapper.BuildNumAtCard(group.TIPDOC, group.BOCODI, group.CACODI);
 
+            Console.WriteLine($"Procesando documento {numAtCard}");
+
             try
             {
                 // 4. Leer líneas del grupo
@@ -61,10 +63,18 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases
                     message: "Agrupación correcta",
                     logFile: null,
                     ct: ct);
+
+                Console.WriteLine($"Agrupación CORRECTA {numAtCard}. ID de agrupacion: {groupedId}");
+
+                Console.WriteLine();
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync(ct);
+
+                Console.WriteLine($"Agrupación ERROR {numAtCard}. Mensaje de error: {ex.Message}");
+
+                Console.WriteLine();
 
                 throw new GroupingException(
                     message: ex.Message,
