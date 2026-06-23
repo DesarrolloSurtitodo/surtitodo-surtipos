@@ -18,17 +18,23 @@ public class Worker(IServiceScopeFactory scopeFactory, ILogger<Worker> logger, I
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Iniciando ciclo de agrupación: {Time}", DateTimeOffset.Now);
-
-            using (var scope = _scopeFactory.CreateScope())
+            try
             {
+                _logger.LogInformation("Iniciando ciclo");
+
+                await using var scope = _scopeFactory.CreateAsyncScope();
+
                 var pipeline = scope.ServiceProvider
                     .GetRequiredService<GroupingPipelineBehavior>();
 
                 await pipeline.HandleAsync(stoppingToken);
-            }
 
-            _logger.LogInformation("Ciclo finalizado. Próxima ejecución en {Interval}s", intervalSeconds);
+                _logger.LogInformation("Ciclo finalizado");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error en ciclo del worker");
+            }
 
             await Task.Delay(interval, stoppingToken);
         }

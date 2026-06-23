@@ -33,6 +33,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Mappers
                 Lines = lines.Select(l => new DocumentAgroupLines
                 {
                     WarehouseCode = l.BOCODI,
+                    ItemCode = l.ARCODI,
                     Quantity = l.TLQTT,
                     Price = l.TLTOT,
                     DiscountPercent = l.TLPDTE,
