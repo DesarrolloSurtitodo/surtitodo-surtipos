@@ -6,8 +6,6 @@ public interface IDocumentAgroupRepository
 {
     Task<IReadOnlyCollection<DocumentAgroup>> GetPendingAsync(int batchSize, CancellationToken cancellationToken);
 
-    Task MarkAsProcessingAsync(IEnumerable<long> documentIds, CancellationToken cancellationToken);
-
     Task MarkAsTransferredAsync(
         long documentId,
         int? errorCode,
@@ -26,6 +24,7 @@ public interface IDocumentAgroupRepository
         string? errorMessage,
         int? httpCode,
         string? httpMessage,
+        string requestFile,
         string responseFile,
         CancellationToken cancellationToken);
 }
