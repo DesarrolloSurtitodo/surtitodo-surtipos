@@ -8,7 +8,5 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfac
         /// Verifica si un TICODI ya fue procesado. Retorna el DocumentAgroupId si existe.
         /// </summary>
         Task<long?> FindAgroupIdAsync(string bocodi, string cacodi, string tipdoc, int ticodi, CancellationToken ct = default);
-
-        Task InsertManyAsync(IEnumerable<DocumentAgroupTrace> traces, CancellationToken ct = default);
     }
 }

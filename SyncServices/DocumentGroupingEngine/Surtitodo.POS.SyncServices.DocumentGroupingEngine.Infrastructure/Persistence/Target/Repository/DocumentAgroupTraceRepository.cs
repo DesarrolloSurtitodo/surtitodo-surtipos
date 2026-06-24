@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Persistence.Target;
-using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Target;
 
 namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Persistence.Target.Repository
 {
@@ -19,11 +18,6 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Persi
                     t.TICODI == ticodi, ct);
 
             return trace?.DocumentAgroupId;
-        }
-
-        public async Task InsertManyAsync(IEnumerable<DocumentAgroupTrace> traces, CancellationToken ct = default)
-        {
-            await _ctx.DocumentAgroupTrace.AddRangeAsync(traces, ct);
         }
     }
 }
