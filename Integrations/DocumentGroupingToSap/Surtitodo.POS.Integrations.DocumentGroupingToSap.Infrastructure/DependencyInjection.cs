@@ -22,8 +22,7 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure
 
             services.AddScoped<IDocumentAgroupRepository, DocumentAgroupRepository>();
             services.AddScoped<ISapInvoiceLookupRepository, SapInvoiceLookupRepository>();
-
-
+            services.AddScoped<ISapInvoiceService, SapInvoiceService>();
 
             services.AddHttpClient(
                 "SapServiceLayer",

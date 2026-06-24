@@ -6,24 +6,14 @@ public interface IDocumentAgroupRepository
 {
     Task<IReadOnlyCollection<DocumentAgroup>> GetPendingAsync(int batchSize, CancellationToken cancellationToken);
 
-    Task MarkAsTransferredAsync(
+    Task MarkAsIntegrationAsync(
         long documentId,
         int? errorCode,
         string? errorMessage,
         int? httpCode,
         string? httpMessage,
-        int sapDocEntry,
-        int sapDocNum,
-        string requestFile,
-        string responseFile,
-        CancellationToken cancellationToken);
-
-    Task MarkAsErrorAsync(
-        long documentId,
-        int? errorCode,
-        string? errorMessage,
-        int? httpCode,
-        string? httpMessage,
+        long? sapDocEntry,
+        long? sapDocNum,
         string requestFile,
         string responseFile,
         CancellationToken cancellationToken);

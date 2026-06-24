@@ -22,28 +22,8 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Persis
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task MarkAsErrorAsync(long documentId, int? errorCode, string? errorMessage, int? httpCode, string? httpMessage, string requestFile, string responseFile, 
-            CancellationToken cancellationToken)
-        {
-            var now = _dateTimeProvider.Now;
-            var document = await _context.DocumentAgroups.FirstAsync(x => x.Id == documentId, cancellationToken);
-
-            document.IntegrationStatus = "E";
-            document.IntegrationDate = DateOnly.FromDateTime(now);
-            document.IntegrationHour = TimeOnly.FromDateTime(now);
-            document.IntegrationDateTime = now;
-            document.IntegrationCode = errorCode;
-            document.IntegrationMessage = errorMessage;
-            document.IntegrationHttpCode = httpCode;
-            document.IntegrationHttpMessage = httpMessage;
-            document.IntegrationJsonRequestFile = requestFile;
-            document.IntegrationJsonResponseFile = responseFile;
-
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task MarkAsTransferredAsync(long documentId, int? errorCode, string? errorMessage, int? httpCode, string? httpMessage, int sapDocEntry, int sapDocNum, 
-            string requestFile, string responseFile, CancellationToken cancellationToken)
+        public async Task MarkAsIntegrationAsync(long documentId, int? errorCode, string? errorMessage, int? httpCode, string? httpMessage, long? sapDocEntry, long? sapDocNum,
+        string requestFile, string responseFile, CancellationToken cancellationToken)
         {
             var now = _dateTimeProvider.Now;
             var document = await _context.DocumentAgroups.FirstAsync(x => x.Id == documentId, cancellationToken);
