@@ -7,6 +7,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Persi
     {
         public DbSet<DocumentAgroup> DocumentAgroup => Set<DocumentAgroup>();
         public DbSet<DocumentAgroupLines> DocumentAgroupLines => Set<DocumentAgroupLines>();
+        public DbSet<DocumentAgroupTrace> DocumentAgroupTrace => Set<DocumentAgroupTrace>();
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
@@ -27,6 +28,21 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Persi
                 e.HasKey(x => x.Id);
                 e.Property(x => x.Id).ValueGeneratedOnAdd();
                 e.Property(x => x.Price).HasPrecision(18, 2);
+            });
+
+            mb.Entity<DocumentAgroupTrace>(e =>
+            {
+                e.ToTable("DocumentAgroupTrace", "sap");
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Id).ValueGeneratedOnAdd();
+
+                e.HasIndex(x => new { x.BOCODI, x.CACODI, x.TIPDOC, x.TICODI })
+                 .IsUnique();
+
+                e.HasOne(x => x.DocumentAgroup)
+                 .WithMany(x => x.Traces)
+                 .HasForeignKey(x => x.DocumentAgroupId)
+                 .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
