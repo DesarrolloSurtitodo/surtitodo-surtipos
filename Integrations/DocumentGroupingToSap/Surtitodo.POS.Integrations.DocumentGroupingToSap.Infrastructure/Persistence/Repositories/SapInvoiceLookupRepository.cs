@@ -18,11 +18,14 @@ internal class SapInvoiceLookupRepository(IOptions<HanaOptions> options) : ISapI
         SELECT
             "DocEntry",
             "DocNum"
-        FROM OINV
+        FROM "SURTITODO"."OINV"
         WHERE "NumAtCard" = ?
         """;
 
+        await connection.OpenAsync(cancellationToken);  // ← faltaba esto
+
         await using var command = new OdbcCommand(query, connection);
+        command.Parameters.AddWithValue("?", numAtCard); // ← faltaba el parámetro
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
 
@@ -30,8 +33,8 @@ internal class SapInvoiceLookupRepository(IOptions<HanaOptions> options) : ISapI
 
         return new SapInvoiceLookupResult
         {
-            DocEntry = reader.GetInt32(0),
-            DocNum = reader.GetInt32(1)
+            DocEntry = reader.GetInt64(0),  // ← long
+            DocNum = reader.GetInt64(1)   // ← long
         };
     }
 }

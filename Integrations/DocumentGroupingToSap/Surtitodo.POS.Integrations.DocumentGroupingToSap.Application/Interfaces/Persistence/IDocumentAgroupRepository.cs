@@ -16,6 +16,7 @@ public interface IDocumentAgroupRepository
         long? sapDocNum,
         string requestFile,
         string responseFile,
+        string integrationStatus,
         CancellationToken cancellationToken);
 }
 

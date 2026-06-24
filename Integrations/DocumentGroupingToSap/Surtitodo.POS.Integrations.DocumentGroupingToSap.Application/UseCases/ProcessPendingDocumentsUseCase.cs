@@ -30,6 +30,7 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
             // 2. Recorrer documentos
             foreach (var document in documents)
             {
+                Console.WriteLine($"Procesando documento {document.NumAtCard}");
                 try
                 {
                     // 3. Validar por el NumAtCard si ya existe en SAP
@@ -38,6 +39,8 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
                     // 4. Si existe, actualizamos en la BD de agrupación
                     if (existingInvoice is not null)
                     {
+                        Console.WriteLine($"Documento ya existe en SAP con DocNum {existingInvoice.DocNum} y DocEntry {existingInvoice.DocEntry}. Se procede a actualizar");
+
                         await _documentRepository
                             .MarkAsIntegrationAsync(
                                 document.Id,
@@ -49,20 +52,23 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
                                 existingInvoice.DocNum,
                                 string.Empty,
                                 string.Empty,
+                                "T",
                                 cancellationToken);
 
                         continue;
                     }
 
+                    Console.WriteLine($"Creando el request");
                     // 5. Si no existe, creamos el mapping
                     var documentRequest = RequestDocumentInvoiceMapper.ToRequest(document);
 
+                    Console.WriteLine($"Ingresando factura por el service layer");
                     // 6. Crear la factura en SAP
                     var result = await _sapInvoiceService.CreateInvoiceAsync(documentRequest, cancellationToken);
 
                     // 7. Creamos los files
-                    var requestFile = await _jsonFileStorage.SaveRequestAsync(document.Id, result.RequestJson, cancellationToken);
-                    var responseFile = await _jsonFileStorage.SaveResponseAsync(document.Id, result.ResponseJson, cancellationToken);
+                    var requestFile = await _jsonFileStorage.SaveRequestAsync(document.NumAtCard, result.RequestJson, cancellationToken);
+                    var responseFile = await _jsonFileStorage.SaveResponseAsync(document.NumAtCard, result.ResponseJson, cancellationToken);
 
                     // 8. Actualizamos en la BD de agrupación
                     await _documentRepository
@@ -76,6 +82,7 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
                             result.SapDocNum,
                             requestFile,
                             responseFile,
+                            result.Success ? "T" : "E",
                             cancellationToken);
                 }
                 catch (Exception ex)

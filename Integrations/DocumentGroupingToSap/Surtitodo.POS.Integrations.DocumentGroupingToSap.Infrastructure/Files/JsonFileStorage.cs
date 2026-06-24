@@ -12,24 +12,30 @@ public sealed class JsonFileStorage(IOptions<StorageOptions> options) : IJsonFil
 {
     private readonly StorageOptions _options = options.Value;
 
-    public async Task<string> SaveRequestAsync(long documentId, string content, CancellationToken cancellationToken)
+    public async Task<string> SaveRequestAsync(string numAtCard, string content, CancellationToken cancellationToken)
     {
-        return await SaveAsync(_options.RequestsPath, documentId, content, cancellationToken);
+        return await SaveAsync(_options.RequestsPath, numAtCard, content, cancellationToken);
     }
 
-    public async Task<string> SaveResponseAsync(long documentId, string content, CancellationToken cancellationToken)
+    public async Task<string> SaveResponseAsync(string numAtCard, string content, CancellationToken cancellationToken)
     {
-        return await SaveAsync(_options.ResponsesPath, documentId, content, cancellationToken);
+        return await SaveAsync(_options.ResponsesPath, numAtCard, content, cancellationToken);
     }
 
-    private static async Task<string> SaveAsync(string basePath, long documentId, string content, CancellationToken cancellationToken)
+    private static async Task<string> SaveAsync(string basePath, string numAtCard, string content, CancellationToken cancellationToken)
     {
-        Directory.CreateDirectory(basePath);
+        // Resolver siempre relativo al ejecutable, igual que Serilog
+        var absolutePath = Path.IsPathRooted(basePath)
+            ? basePath
+            : Path.Combine(AppContext.BaseDirectory, basePath);
 
-        var filePath = Path.Combine(basePath, $"{documentId}.json");
+        Directory.CreateDirectory(absolutePath);
+
+        var fileName = $"{numAtCard}.json";
+        var filePath = Path.Combine(absolutePath, $"{numAtCard}.json");
 
         await File.WriteAllTextAsync(filePath, content, Encoding.UTF8, cancellationToken);
 
-        return filePath;
+        return fileName;
     }
 }

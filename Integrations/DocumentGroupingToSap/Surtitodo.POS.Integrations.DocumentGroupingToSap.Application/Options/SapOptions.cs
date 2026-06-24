@@ -13,4 +13,5 @@ public sealed class SapOptions
     public string Password { get; init; } = string.Empty;
 
     public int SessionTimeoutMinutes { get; init; }
+    public bool IgnoreSslErrors { get; init; } = false;
 }

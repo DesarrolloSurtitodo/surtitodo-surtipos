@@ -23,12 +23,12 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Persis
         }
 
         public async Task MarkAsIntegrationAsync(long documentId, int? errorCode, string? errorMessage, int? httpCode, string? httpMessage, long? sapDocEntry, long? sapDocNum,
-        string requestFile, string responseFile, CancellationToken cancellationToken)
+        string requestFile, string responseFile, string integrationStatus, CancellationToken cancellationToken)
         {
             var now = _dateTimeProvider.Now;
             var document = await _context.DocumentAgroups.FirstAsync(x => x.Id == documentId, cancellationToken);
 
-            document.IntegrationStatus = "T";
+            document.IntegrationStatus = integrationStatus;
             document.IntegrationDate = DateOnly.FromDateTime(now);
             document.IntegrationHour = TimeOnly.FromDateTime(now);
             document.IntegrationDateTime = now;

@@ -1,21 +1,28 @@
 using Serilog;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure;
-
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Worker;
-var builder = Host.CreateApplicationBuilder(args);
 
-// ── Serilog ──────────────────────────────────────────────────────────
-builder.Logging.ClearProviders();
-builder.Services.AddSerilog((ctx, lc) => lc.ReadFrom.Configuration(builder.Configuration));
+var logsPath = Path.Combine(AppContext.BaseDirectory, "Logs");
+Directory.CreateDirectory(Path.Combine(logsPath, "Requests"));
+Directory.CreateDirectory(Path.Combine(logsPath, "Responses"));
 
-// ── Capas ────────────────────────────────────────────────────────────
-builder.Services
-    .AddApplication(builder.Configuration)
-    .AddInfrastructure(builder.Configuration);
+var host = Host.CreateDefaultBuilder(args)
+    .UseSerilog((ctx, lc) => lc
+        .ReadFrom.Configuration(ctx.Configuration)
+        .WriteTo.Console()
+        .WriteTo.File(
+            path: Path.Combine(logsPath, "worker-.log"),
+            rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"))
+    .ConfigureServices((ctx, services) =>
+    {
+        services
+            .AddApplication(ctx.Configuration)
+            .AddInfrastructure(ctx.Configuration);
 
-// ── Worker ───────────────────────────────────────────────────────────
-builder.Services.AddHostedService<Worker>();
+        services.AddHostedService<Worker>();
+    })
+    .Build();
 
-var host = builder.Build();
 host.Run();

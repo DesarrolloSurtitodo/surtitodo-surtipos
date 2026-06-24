@@ -2,7 +2,7 @@
 
 public interface IJsonFileStorage
 {
-    Task<string> SaveRequestAsync(long documentId, string content, CancellationToken cancellationToken);
+    Task<string> SaveRequestAsync(string numAtCard, string content, CancellationToken cancellationToken);
 
-    Task<string> SaveResponseAsync(long documentId, string content, CancellationToken cancellationToken);
+    Task<string> SaveResponseAsync(string numAtCard, string content, CancellationToken cancellationToken);
 }
