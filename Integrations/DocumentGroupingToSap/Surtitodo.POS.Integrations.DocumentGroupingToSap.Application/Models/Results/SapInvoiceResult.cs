@@ -1,12 +1,12 @@
-﻿namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Responses;
+﻿namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Results;
 
-public class SapInvoiceResponse
+public class SapInvoiceResult
 {
     public bool Success { get; init; }
 
-    public int? SapDocEntry { get; init; }
+    public long? SapDocEntry { get; init; }
 
-    public int? SapDocNum { get; init; }
+    public long? SapDocNum { get; init; }
 
     public int? ErrorCode { get; init; }
 
