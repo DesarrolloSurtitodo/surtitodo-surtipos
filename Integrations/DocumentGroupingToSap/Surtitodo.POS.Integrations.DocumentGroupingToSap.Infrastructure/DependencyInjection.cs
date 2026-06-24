@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Files;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Persistence;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Sap;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Services;
+using Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Files;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Persistence.Context;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Persistence.Repositories;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Sap;
@@ -23,6 +25,7 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure
             services.AddScoped<IDocumentAgroupRepository, DocumentAgroupRepository>();
             services.AddScoped<ISapInvoiceLookupRepository, SapInvoiceLookupRepository>();
             services.AddScoped<ISapInvoiceService, SapInvoiceService>();
+            services.AddScoped<IJsonFileStorage, JsonFileStorage>();
 
             services.AddHttpClient(
                 "SapServiceLayer",

@@ -14,5 +14,5 @@ public class SapInvoiceRequest
 
     public int Series { get; init; }
 
-    public List<SapInvoiceLineRequest> DocumentLines { get; init; } = [];
+    public List<SapInvoiceLineRequest> DocumentLines { get; init; } = new();
 }

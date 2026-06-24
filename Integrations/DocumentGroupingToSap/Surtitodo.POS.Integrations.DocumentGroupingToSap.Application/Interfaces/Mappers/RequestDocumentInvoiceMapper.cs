@@ -17,13 +17,13 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interface
                 Series = 0000,
                 DocumentLines = document.Lines.Select(l => new SapInvoiceLineRequest
                 {
-                    WarehouseCode = '301', //l.WarehouseCode,
+                    WarehouseCode = "301", //l.WarehouseCode,
                     DiscountPercent = l.DiscountPercent,
                     ItemCode = l.ItemCode,
                     Price = l.Price,
                     Quantity = l.Quantity,
                     TaxCode = l.TaxCode
-                })
+                }).ToList(),
             };
         }
     }
