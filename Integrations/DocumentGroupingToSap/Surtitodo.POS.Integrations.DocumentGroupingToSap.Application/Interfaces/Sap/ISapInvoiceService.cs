@@ -1,4 +1,5 @@
-﻿using Surtitodo.POS.Integrations.DocumentGroupingToSap.Domain.Entities;
+﻿using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models;
+using Surtitodo.POS.Integrations.DocumentGroupingToSap.Domain.Entities;
 
 namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Sap;
 
