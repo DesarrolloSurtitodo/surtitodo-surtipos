@@ -1,1 +1,6 @@
-<Solution />
+<Solution>
+  <Project Path="Surtitodo.POS.Integrations.DocumentGroupingToSap.Application/Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.csproj" />
+  <Project Path="Surtitodo.POS.Integrations.DocumentGroupingToSap.Domain/Surtitodo.POS.Integrations.DocumentGroupingToSap.Domain.csproj" />
+  <Project Path="Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure/Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.csproj" />
+  <Project Path="Surtitodo.POS.Integrations.DocumentGroupingToSap.Worker/Surtitodo.POS.Integrations.DocumentGroupingToSap.Worker.csproj" />
+</Solution>
