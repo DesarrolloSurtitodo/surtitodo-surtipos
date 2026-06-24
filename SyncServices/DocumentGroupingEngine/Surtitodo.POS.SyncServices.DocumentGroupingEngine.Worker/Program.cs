@@ -12,7 +12,7 @@ builder.Services.AddSerilog((ctx, lc) => lc.ReadFrom.Configuration(builder.Confi
 
 // ── Capas ────────────────────────────────────────────────────────────
 builder.Services
-    .AddApplication()
+    .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration);
 
 // ── Worker ───────────────────────────────────────────────────────────
