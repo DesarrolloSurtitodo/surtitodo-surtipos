@@ -20,13 +20,19 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping
 
             foreach (var doc in orderedDocuments)
             {
-                // Si este documento solo ya supera el límite, lo saltamos
-                if (doc.TITOT > MaxGroupAmount)
-                    continue;
-
-                // Si agregarlo rompería el límite, cerramos el grupo
+                // Si agregarlo rompería el límite...
                 if (accumulated + doc.TITOT > MaxGroupAmount)
+                {
+                    // ...pero el grupo aún está vacío, significa que este documento
+                    // solo ya supera el límite → se agrupa solo como caso excepcional
+                    if (members.Count == 0)
+                    {
+                        members.Add(doc);
+                    }
+
+                    // En ambos casos cerramos — sea grupo de uno o grupo acumulado
                     break;
+                }
 
                 members.Add(doc);
                 accumulated += doc.TITOT;
