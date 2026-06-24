@@ -3,6 +3,7 @@
     public interface IUnitOfWork : IAsyncDisposable
     {
         IGroupedDocumentRepository GroupedDocuments { get; }
+        IDocumentAgroupTraceRepository Traces { get; }
         Task BeginAsync(CancellationToken ct = default);
         Task CommitAsync(CancellationToken ct = default);
         Task RollbackAsync(CancellationToken ct = default);
