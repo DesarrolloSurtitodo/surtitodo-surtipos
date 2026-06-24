@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -9,5 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.14" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+	  <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Surtitodo.POS.Integrations.DocumentGroupingToSap.Application\Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.csproj" />
+    <ProjectReference Include="..\Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure\Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
