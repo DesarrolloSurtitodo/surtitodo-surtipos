@@ -2,6 +2,7 @@
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Persistence.Source;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Services;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping;
+using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Common.Extensions;
 
 namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Pipeline
 {
@@ -30,12 +31,12 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Pipel
 
                 await _documentsRepo.UpdateGroupStatusAsync(
                     ex.MemberKeys,
-                    ex.Bocodi, 
-                    ex.Cacodi, 
+                    ex.Bocodi,
+                    ex.Cacodi,
                     ex.Tipdoc,
                     statusCode: "E",
                     groupedDocumentId: null,
-                    message: ex.InnerException?.Message ?? ex.Message,
+                    message: ex.GetRootMessage().Truncate(250),
                     logFile: logFile,
                     ct: ct);
             }

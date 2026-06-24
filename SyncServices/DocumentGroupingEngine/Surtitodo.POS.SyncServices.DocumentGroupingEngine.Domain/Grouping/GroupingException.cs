@@ -9,14 +9,15 @@
         public string Tipdoc { get; }
 
         public GroupingException(
-            string message,
             string numAtCard,
             IEnumerable<int> memberKeys,
             string bocodi,
             string cacodi,
             string tipdoc,
             Exception inner)
-            : base(message, inner)
+            : base(
+                $"Error agrupando documento {numAtCard}. Tienda={bocodi}, Caja={cacodi}, Tipo={tipdoc}.",
+                inner)
         {
             NumAtCard = numAtCard;
             MemberKeys = memberKeys;

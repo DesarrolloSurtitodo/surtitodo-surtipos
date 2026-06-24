@@ -9,25 +9,28 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Servi
         private readonly ILogger<ErrorLogService> _logger = logger;
         private readonly string _logBasePath = config["Paths:ErrorLogPath"] ?? "logs/errors";
 
-        public async Task<string> LogErrorAsync(string numAtCard, Exception exception, CancellationToken ct = default)
+        public async Task<string> LogErrorAsync(
+            string numAtCard,
+            Exception exception,
+            CancellationToken ct = default)
         {
             var now = DateTime.Now;
+
             var fileName = $"{now:yyyy-MM-dd}_{now:HH-mm-ss}_{numAtCard}.log";
             var fullPath = Path.Combine(_logBasePath, fileName);
 
             Directory.CreateDirectory(_logBasePath);
 
             var content = $"""
-            Fecha:    {now:yyyy-MM-dd HH:mm:ss}
-            NumAtCard:{numAtCard}
-            Contexto: 
-            Error:    {exception.Message}
-            StackTrace:
-            {exception.StackTrace}
+                Fecha: {now:yyyy-MM-dd HH:mm:ss}
+                NumAtCard: {numAtCard}
+
+                {exception}
             """;
 
             await File.WriteAllTextAsync(fullPath, content, ct);
-            _logger.LogError("Log de error generado: {FileName}", fileName);
+
+            _logger.LogError(exception, "Log de error generado: {FileName}", fileName);
 
             return fileName;
         }

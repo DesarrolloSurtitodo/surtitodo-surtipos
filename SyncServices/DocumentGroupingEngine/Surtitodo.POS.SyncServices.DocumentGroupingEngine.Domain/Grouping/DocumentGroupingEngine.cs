@@ -16,21 +16,38 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping
             var members = new List<Documents>();
             decimal accumulated = 0m;
 
+            // El molde se fija con el primer documento acumulado
+            string? mBocodi = null;
+            string? mCacodi = null;
+            string? mTipdoc = null;
+
             foreach (var doc in orderedDocuments)
             {
-                // Si agregarlo rompería el límite...
-                if (accumulated + doc.TITOT > maxGroupAmount)
+                // Si aún no hay molde, este doc lo define
+                if (members.Count == 0)
                 {
-                    // ...pero el grupo aún está vacío, significa que este documento
-                    // solo ya supera el límite → se agrupa solo como caso excepcional
-                    if (members.Count == 0)
+                    // Caso excepcional: el primer doc ya supera el límite → grupo de uno
+                    if (doc.TITOT > maxGroupAmount)
                     {
                         members.Add(doc);
+                        break;
                     }
 
-                    // En ambos casos cerramos — sea grupo de uno o grupo acumulado
-                    break;
+                    mBocodi = doc.BOCODI;
+                    mCacodi = doc.CACODI;
+                    mTipdoc = doc.TIPDOC;
+
+                    members.Add(doc);
+                    accumulated += doc.TITOT;
+                    continue;
                 }
+
+                // Solo candidatos que coincidan con el molde del grupo
+                if (doc.BOCODI != mBocodi || doc.CACODI != mCacodi || doc.TIPDOC != mTipdoc)
+                    continue;
+
+                if (accumulated + doc.TITOT > maxGroupAmount)
+                    break;
 
                 members.Add(doc);
                 accumulated += doc.TITOT;
