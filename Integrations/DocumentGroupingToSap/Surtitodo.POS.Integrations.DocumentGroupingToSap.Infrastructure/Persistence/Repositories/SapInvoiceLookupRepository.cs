@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Persistence;
-using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models;
+using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Results;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Options;
 using System.Data.Odbc;
 

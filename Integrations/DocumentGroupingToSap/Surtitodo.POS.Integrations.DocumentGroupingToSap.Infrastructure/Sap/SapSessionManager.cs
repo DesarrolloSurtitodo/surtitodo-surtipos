@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Sap;
-using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models;
+using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Responses;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Options;
 using System.Net.Http.Json;
 

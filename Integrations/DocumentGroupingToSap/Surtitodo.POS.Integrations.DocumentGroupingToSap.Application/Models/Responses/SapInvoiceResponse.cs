@@ -1,6 +1,6 @@
-﻿namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models;
+﻿namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Responses;
 
-public sealed class CreateInvoiceResult
+public class SapInvoiceResponse
 {
     public bool Success { get; init; }
 
@@ -19,4 +19,5 @@ public sealed class CreateInvoiceResult
     public string RequestJson { get; init; } = string.Empty;
 
     public string ResponseJson { get; init; } = string.Empty;
+
 }

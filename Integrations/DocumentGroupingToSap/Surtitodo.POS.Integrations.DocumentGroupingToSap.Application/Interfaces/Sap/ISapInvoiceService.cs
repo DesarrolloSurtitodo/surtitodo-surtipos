@@ -1,9 +1,9 @@
-﻿using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models;
-using Surtitodo.POS.Integrations.DocumentGroupingToSap.Domain.Entities;
+﻿using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Requests;
+using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Responses;
 
 namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Sap;
 
 public interface ISapInvoiceService
 {
-    Task<CreateInvoiceResult> CreateInvoiceAsync(DocumentAgroup document, CancellationToken cancellationToken);
+    Task<SapInvoiceResponse> CreateInvoiceAsync(SapInvoiceRequest request, CancellationToken cancellationToken);
 }

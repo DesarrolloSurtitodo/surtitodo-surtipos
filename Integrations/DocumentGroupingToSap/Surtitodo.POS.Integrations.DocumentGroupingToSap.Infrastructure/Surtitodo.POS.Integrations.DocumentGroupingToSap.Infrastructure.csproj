@@ -6,4 +6,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.17" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
+    <PackageReference Include="System.Data.Odbc" Version="9.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Surtitodo.POS.Integrations.DocumentGroupingToSap.Application\Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.csproj" />
+    <ProjectReference Include="..\Surtitodo.POS.Integrations.DocumentGroupingToSap.Domain\Surtitodo.POS.Integrations.DocumentGroupingToSap.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models;
+﻿using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Results;
 
 namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Persistence;
 

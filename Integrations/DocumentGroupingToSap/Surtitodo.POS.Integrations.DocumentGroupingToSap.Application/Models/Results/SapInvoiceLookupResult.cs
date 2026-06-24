@@ -1,4 +1,4 @@
-﻿namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models;
+﻿namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Models.Results;
 
 public sealed class SapInvoiceLookupResult { 
     public long DocEntry { get; init; } 
