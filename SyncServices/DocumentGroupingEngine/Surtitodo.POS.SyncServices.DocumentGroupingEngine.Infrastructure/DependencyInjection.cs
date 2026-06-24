@@ -22,6 +22,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure
             services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(config.GetConnectionString("TargetConnectionDb")));
 
             services.AddScoped<IGroupedDocumentRepository, GroupedDocumentRepository>();
+            services.AddScoped<IDocumentAgroupTraceRepository, DocumentAgroupTraceRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // ── Source: Dapper ───────────────────────────────────────────
