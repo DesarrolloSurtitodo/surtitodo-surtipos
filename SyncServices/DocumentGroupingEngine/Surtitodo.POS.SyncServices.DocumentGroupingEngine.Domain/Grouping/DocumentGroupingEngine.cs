@@ -4,8 +4,6 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping
 {
     public static class DocumentGroupingEngine
     {
-        private const decimal MaxGroupAmount = 1_000_000m;
-
         /// <summary>
         /// Recibe los documentos YA ordenados (TIDATA, CACODI, TICODI) y construye
         /// el primer grupo válido. Se detiene en cuanto el siguiente doc superaría
@@ -13,7 +11,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping
         /// </summary>
         /// <param name="orderedDocuments">200 docs con AGROUP_STATUS_CODE = 'P', pre-ordenados.</param>
         /// <returns>El grupo formado, o null si ningún documento individual cabe.</returns>
-        public static DocumentGroup? BuildNextGroup(IEnumerable<Documents> orderedDocuments)
+        public static DocumentGroup? BuildNextGroup(IEnumerable<Documents> orderedDocuments, decimal maxGroupAmount)
         {
             var members = new List<Documents>();
             decimal accumulated = 0m;
@@ -21,7 +19,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping
             foreach (var doc in orderedDocuments)
             {
                 // Si agregarlo rompería el límite...
-                if (accumulated + doc.TITOT > MaxGroupAmount)
+                if (accumulated + doc.TITOT > maxGroupAmount)
                 {
                     // ...pero el grupo aún está vacío, significa que este documento
                     // solo ya supera el límite → se agrupa solo como caso excepcional

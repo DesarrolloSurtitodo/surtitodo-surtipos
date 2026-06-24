@@ -4,7 +4,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfac
 {
     public interface IDocumentsRepository
     {
-        Task<IEnumerable<Documents>> GetCandidatesAsync(CancellationToken ct = default);
+        Task<IEnumerable<Documents>> GetCandidatesAsync(int topLimit, CancellationToken ct = default);
         Task UpdateGroupStatusAsync(
             IEnumerable<int> ticodiList,
             string bocodi, string cacodi, string tipdoc,

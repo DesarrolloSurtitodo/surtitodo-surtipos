@@ -9,26 +9,26 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Persi
     {
         private readonly IDbConnection _connection = connection;
 
-        public async Task<IEnumerable<Documents>> GetCandidatesAsync(CancellationToken ct = default)
+        public async Task<IEnumerable<Documents>> GetCandidatesAsync(int topLimit, CancellationToken ct = default)
         {
-            const string sql = @"
-            SELECT TOP 50
-                T0.BOCODI,
-                T0.CACODI,
-                T0.TIPDOC,
-                T0.TICODI,
-                CAST(T0.TIDATA AS DATE) AS TIDATA,
-                T1.CardCode AS CLCODI,
-                CAST(T0.TITOT AS DECIMAL(18,2)) AS TITOT
+            var sql = $@"
+                SELECT TOP {topLimit}
+                    T0.BOCODI,
+                    T0.CACODI,
+                    T0.TIPDOC,
+                    T0.TICODI,
+                    CAST(T0.TIDATA AS DATE) AS TIDATA,
+                    T1.CardCode AS CLCODI,
+                    CAST(T0.TITOT AS DECIMAL(18,2)) AS TITOT
             FROM dbo.DOCUMENTS T0
             INNER JOIN dbo.DEFAULT_CUSTOMERS T1 ON T0.BOCODI = T1.WarehouseCode
             WHERE 
                 T0.AGROUP_STATUS_CODE = 'P'
             ORDER BY 
-                T0.TIDATA, T0.TICODI;";
+                T0.TIDATA, 
+                T0.TICODI";
 
             var command = new CommandDefinition(sql, cancellationToken: ct);
-
             return await _connection.QueryAsync<Documents>(command);
         }
 

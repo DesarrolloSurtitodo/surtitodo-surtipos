@@ -1,4 +1,6 @@
-﻿using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Persistence.Source;
+﻿using Microsoft.Extensions.Options;
+using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Configuration;
+using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Persistence.Source;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Persistence.Target;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.Services;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Mappers;
@@ -9,11 +11,13 @@ using groupingEngine = Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.
 
 namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases.GroupDocuments
 {
-    public class GroupDocumentsUseCase(IDocumentsRepository documentsRepo, IDocumentsLinesRepository linesRepo, IUnitOfWork unitOfWork) : IGroupingOrchestrator
+    public class GroupDocumentsUseCase(IDocumentsRepository documentsRepo, IDocumentsLinesRepository linesRepo, IUnitOfWork unitOfWork, 
+        IOptions<GroupingSettings> settings) : IGroupingOrchestrator
     {
         private readonly IDocumentsRepository _documentsRepo = documentsRepo;
         private readonly IDocumentsLinesRepository _linesRepo = linesRepo;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly GroupingSettings _settings = settings.Value;
 
         // Método auxiliar privado
         private async Task<(List<(Documents doc, long agroupId)> alreadyProcessed, List<Documents> pending)> SplitByTraceAsync(IEnumerable<Documents> candidates, 
@@ -38,7 +42,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases
         public async Task ExecuteAsync(CancellationToken ct = default)
         {
             // 1. Leer candidatos
-            var candidates = await _documentsRepo.GetCandidatesAsync(ct);
+            var candidates = await _documentsRepo.GetCandidatesAsync(_settings.CandidatesTopLimit, ct);
             if (candidates is null) return;
 
             // 2. Validar trazabilidad ANTES de agrupar
@@ -63,7 +67,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases
             if (pending.Count == 0) return;
 
             // 3. Agrupar solo los pendientes
-            var group = groupingEngine.BuildNextGroup(pending);
+            var group = groupingEngine.BuildNextGroup(pending, _settings.MaxGroupAmount);
             if (group is null) return;
 
             // 4. Generar NumAtCard
