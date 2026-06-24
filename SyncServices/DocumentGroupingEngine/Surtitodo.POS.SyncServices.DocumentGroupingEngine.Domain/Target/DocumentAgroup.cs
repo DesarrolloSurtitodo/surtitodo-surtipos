@@ -25,5 +25,6 @@
         public long? DocNumSap { get; set; }
         public long? DocEntrySap { get; set; }
         public List<DocumentAgroupLines> Lines { get; set; } = new();
+        public List<DocumentAgroupTrace> Traces { get; set; } = new();
     }
 }
