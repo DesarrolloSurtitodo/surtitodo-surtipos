@@ -11,12 +11,6 @@ public sealed class SapInvoiceService(IHttpClientFactory httpClientFactory, ISap
 {
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ISapSessionManager _sessionManager = sessionManager;
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
     public async Task<SapInvoiceResult> CreateInvoiceAsync(SapInvoiceRequest request, CancellationToken cancellationToken)
     {
         var requestJson = JsonSerializer.Serialize(request, JsonSerializerOptions.Web);
@@ -27,13 +21,13 @@ public sealed class SapInvoiceService(IHttpClientFactory httpClientFactory, ISap
         client.DefaultRequestHeaders.Remove("Cookie");
         client.DefaultRequestHeaders.Add("Cookie", $"B1SESSION={sessionId}");
 
-        var response = await client.PostAsJsonAsync("/b1s/v1/Invoices", request, cancellationToken);
+        var response = await client.PostAsJsonAsync("/b1s/v1/Invoices", request, SapJsonOptions.Default, cancellationToken);
 
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            var success = JsonSerializer.Deserialize<SapSuccessResponse>(responseJson, JsonOptions);
+            var success = JsonSerializer.Deserialize<SapSuccessResponse>(responseJson, SapJsonOptions.Default);
 
             return new SapInvoiceResult
             {
@@ -50,7 +44,7 @@ public sealed class SapInvoiceService(IHttpClientFactory httpClientFactory, ISap
         }
         else
         {
-            var error = JsonSerializer.Deserialize<SapErrorResponse>(responseJson, JsonOptions);
+            var error = JsonSerializer.Deserialize<SapErrorResponse>(responseJson, SapJsonOptions.Default);
 
             return new SapInvoiceResult
             {

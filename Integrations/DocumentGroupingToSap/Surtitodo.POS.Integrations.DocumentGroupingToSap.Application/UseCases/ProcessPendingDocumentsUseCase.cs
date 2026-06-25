@@ -65,10 +65,10 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
                         continue;
                     }
 
-                    Console.WriteLine($"Consultando series de la tienda {document.WarehouseCode} en SAP");
+                    Console.WriteLine($"Consultando series de la tienda {301 /*document.WarehouseCode */} en SAP");
 
                     // 5. Validar si hay series disponibles
-                    int series = await _sapSeriesLookupRepository.GetSeriesNumberAsync(document.WarehouseCode, cancellationToken) 
+                    int series = await _sapSeriesLookupRepository.GetSeriesNumberAsync("301" /*document.WarehouseCode */, cancellationToken) 
                         ?? throw new SapSeriesNotFoundException(document.WarehouseCode, document.NumAtCard);
 
                     Console.WriteLine($"Series obtenida {series}");
