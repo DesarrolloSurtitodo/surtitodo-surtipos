@@ -6,7 +6,7 @@ using System.Data.Odbc;
 
 namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Persistence.Repositories;
 
-internal class SapInvoiceLookupRepository(IOptions<HanaOptions> options) : ISapInvoiceLookupRepository
+public class SapInvoiceLookupRepository(IOptions<HanaOptions> options) : ISapInvoiceLookupRepository
 {
     private readonly string _connectionString = options.Value.ConnectionString;
 

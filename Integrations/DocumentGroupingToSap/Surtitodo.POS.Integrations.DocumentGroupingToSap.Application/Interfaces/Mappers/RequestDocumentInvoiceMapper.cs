@@ -5,7 +5,7 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interface
 {
     public static class RequestDocumentInvoiceMapper
     {
-        public static SapInvoiceRequest ToRequest(DocumentAgroup document)
+        public static SapInvoiceRequest ToRequest(DocumentAgroup document, int series)
         {
             return new SapInvoiceRequest
             {
@@ -14,7 +14,7 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interface
                 DocDueDate = document.DocDate,
                 NumAtCard = document.NumAtCard,
                 Comments = "Integración hecha desde el área de tecnología",
-                Series = 0000,
+                Series = series,
                 DocumentLines = document.Lines.Select(l => new SapInvoiceLineRequest
                 {
                     WarehouseCode = "301", //l.WarehouseCode,

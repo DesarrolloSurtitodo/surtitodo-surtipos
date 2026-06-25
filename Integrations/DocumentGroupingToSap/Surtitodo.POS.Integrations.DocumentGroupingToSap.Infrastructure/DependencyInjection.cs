@@ -30,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<ISapInvoiceLookupRepository, SapInvoiceLookupRepository>();
         services.AddScoped<ISapInvoiceService, SapInvoiceService>();
         services.AddScoped<IJsonFileStorage, JsonFileStorage>();
+        services.AddScoped<ISapSeriesLookupRepository, SapSeriesLookupRepository>();
 
         services.AddHttpClient("SapServiceLayer", client =>
         {
