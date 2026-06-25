@@ -15,17 +15,28 @@ public class SapInvoiceLookupRepository(IOptions<HanaOptions> options) : ISapInv
         await using var connection = new OdbcConnection(_connectionString);
 
         const string query = """
-        SELECT
-            "DocEntry",
-            "DocNum"
-        FROM "SURTITODO"."OINV"
-        WHERE "NumAtCard" = ?
-        """;
+            SELECT
+                "DocEntry",
+                "DocNum",
+                'OINV' AS "DocType"
+            FROM "SURTITODO"."OINV"
+            WHERE "NumAtCard" = ?
+
+            UNION ALL
+
+            SELECT
+                "DocEntry",
+                "DocNum",
+                'ORIN' AS "DocType"
+            FROM "SURTITODO"."ORIN"
+            WHERE "NumAtCard" = ?
+            """;
 
         await connection.OpenAsync(cancellationToken);  // ← faltaba esto
 
         await using var command = new OdbcCommand(query, connection);
-        command.Parameters.AddWithValue("?", numAtCard); // ← faltaba el parámetro
+        command.Parameters.AddWithValue("?", numAtCard); // param 1 → OINV
+        command.Parameters.AddWithValue("?", numAtCard); // param 2 → ORIN
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
 
