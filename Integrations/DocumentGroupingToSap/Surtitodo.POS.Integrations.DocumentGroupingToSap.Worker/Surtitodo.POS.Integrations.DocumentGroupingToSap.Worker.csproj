@@ -18,5 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Surtitodo.POS.Integrations.DocumentGroupingToSap.Application\Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.csproj" />
     <ProjectReference Include="..\Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure\Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.csproj" />
+	  <ProjectReference Include="..\..\..\Shared\SharedProcessMonitor\Surtitodo.POS.Shared.SharedProcessMonitor\Surtitodo.POS.Shared.SharedProcessMonitor.csproj" />
   </ItemGroup>
 </Project>
