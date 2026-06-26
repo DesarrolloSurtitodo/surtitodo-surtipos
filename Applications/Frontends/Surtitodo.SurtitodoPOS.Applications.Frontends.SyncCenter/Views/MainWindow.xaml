@@ -8,5 +8,33 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
 
+        <ListBox
+        Width="250"
+        Margin="20"
+        ItemsSource="{Binding Modules}">
+
+            <ListBox.ItemTemplate>
+
+                <DataTemplate>
+
+                    <StackPanel Margin="10">
+
+                        <TextBlock
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Text="{Binding Name}" />
+
+                        <TextBlock
+                        Opacity="0.7"
+                        Text="{Binding Description}" />
+
+                    </StackPanel>
+
+                </DataTemplate>
+
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+
     </Grid>
 </Window>
