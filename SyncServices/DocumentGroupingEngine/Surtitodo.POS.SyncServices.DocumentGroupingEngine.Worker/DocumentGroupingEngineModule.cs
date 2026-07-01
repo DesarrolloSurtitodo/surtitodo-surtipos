@@ -1,23 +1,22 @@
-﻿using Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure;
-using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application;
-using Surtitodo.POS.Shared.SharedProcessMonitor;
+﻿using Surtitodo.POS.Shared.SharedProcessMonitor;
+using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application;
+using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure;
 
-namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Worker;
+namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Worker;
 
-public sealed class DocumentGroupingToSapModule(IConfiguration config) : IIntegrationModule
+public sealed class DocumentGroupingEngineModule(IConfiguration config) : IIntegrationModule
 {
     private readonly IConfiguration _config = config;
     private IHost? _host;
     private bool _isPaused;
 
-    public string Name => "Document Grouping → SAP";
-    public string Icon => "ti-file-invoice";
-    public string Description => "Integra documentos agrupados hacia SAP Business One";
+    public string Name => "Document Grouping Engine";
+    public string Icon => "ti-layers-intersect";
+    public string Description => "Agrupa documentos de venta pendientes desde el POS origen";
     public bool IsRunning => _host is not null;
     public bool IsPaused => _isPaused;
 
-    public int IntervalSeconds =>
-    int.TryParse(_config["Integration:ExecutionIntervalSeconds"], out var s) ? s : 30;
+    public int IntervalSeconds => int.TryParse(_config["Worker:IntervalSeconds"], out var s) ? s : 60;
 
     public WorkerEventChannel EventChannel { get; } = new();
 
@@ -38,8 +37,7 @@ public sealed class DocumentGroupingToSapModule(IConfiguration config) : IIntegr
         await _host.StartAsync(ct);
         _isPaused = false;
 
-        await EventChannel.Writer.WriteAsync(
-            new WorkerEvent(WorkerEventType.Started, "Worker iniciado.", DateTime.Now), ct);
+        await EventChannel.Writer.WriteAsync(new WorkerEvent(WorkerEventType.Started, "Worker iniciado.", DateTime.Now), ct);
     }
 
     public async Task PauseAsync(CancellationToken ct = default)
@@ -47,8 +45,7 @@ public sealed class DocumentGroupingToSapModule(IConfiguration config) : IIntegr
         await _host!.StopAsync(ct);
         _isPaused = true;
 
-        await EventChannel.Writer.WriteAsync(
-            new WorkerEvent(WorkerEventType.Paused, "Worker pausado.", DateTime.Now), ct);
+        await EventChannel.Writer.WriteAsync(new WorkerEvent(WorkerEventType.Paused, "Worker pausado.", DateTime.Now), ct);
     }
 
     public async Task ResumeAsync(CancellationToken ct = default)
@@ -60,8 +57,7 @@ public sealed class DocumentGroupingToSapModule(IConfiguration config) : IIntegr
         await _host.StartAsync(ct);
         _isPaused = false;
 
-        await EventChannel.Writer.WriteAsync(
-            new WorkerEvent(WorkerEventType.Info, "Worker reanudado.", DateTime.Now), ct);
+        await EventChannel.Writer.WriteAsync(new WorkerEvent(WorkerEventType.Info, "Worker reanudado.", DateTime.Now), ct);
     }
 
     public async Task StopAsync(CancellationToken ct = default)
@@ -70,7 +66,6 @@ public sealed class DocumentGroupingToSapModule(IConfiguration config) : IIntegr
         _host = null;
         _isPaused = false;
 
-        await EventChannel.Writer.WriteAsync(
-            new WorkerEvent(WorkerEventType.Stopped, "Worker detenido.", DateTime.Now), ct);
+        await EventChannel.Writer.WriteAsync(new WorkerEvent(WorkerEventType.Stopped, "Worker detenido.", DateTime.Now), ct);
     }
 }

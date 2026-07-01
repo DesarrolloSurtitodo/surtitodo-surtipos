@@ -18,5 +18,7 @@ public interface IDocumentAgroupRepository
         string responseFile,
         string integrationStatus,
         CancellationToken cancellationToken);
+
+    Task<(int Procesados, int Correctos, int Errores, int Pendientes)> GetMetricsAsync(CancellationToken cancellationToken);
 }
 

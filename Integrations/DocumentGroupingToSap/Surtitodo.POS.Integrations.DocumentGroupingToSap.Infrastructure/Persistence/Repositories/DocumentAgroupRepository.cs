@@ -11,6 +11,22 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Persis
         private readonly SapIntegrationDbContext _context = context;
         private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
+        public async Task<(int Procesados, int Correctos, int Errores, int Pendientes)> GetMetricsAsync(CancellationToken cancellationToken)
+        {
+            var grupos = await _context.DocumentAgroups
+                .AsNoTracking()
+                .GroupBy(x => x.IntegrationStatus)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            int correctos = grupos.FirstOrDefault(g => g.Status == "T")?.Count ?? 0;
+            int errores = grupos.FirstOrDefault(g => g.Status == "E")?.Count ?? 0;
+            int pendientes = grupos.FirstOrDefault(g => g.Status == "P")?.Count ?? 0;
+            int procesados = correctos + errores;
+
+            return (procesados, correctos, errores, pendientes);
+        }
+
         public async Task<IReadOnlyCollection<DocumentAgroup>> GetPendingAsync(int batchSize, CancellationToken cancellationToken)
         {
             return await _context.DocumentAgroups
@@ -22,8 +38,8 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.Persis
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task MarkAsIntegrationAsync(long documentId, int? errorCode, string? errorMessage, int? httpCode, string? httpMessage, long? sapDocEntry, long? sapDocNum,
-        string requestFile, string responseFile, string integrationStatus, CancellationToken cancellationToken)
+        public async Task MarkAsIntegrationAsync(long documentId, int? errorCode, string? errorMessage, int? httpCode, string? httpMessage, long? sapDocEntry, 
+            long? sapDocNum, string requestFile, string responseFile, string integrationStatus, CancellationToken cancellationToken)
         {
             var now = _dateTimeProvider.Now;
             var document = await _context.DocumentAgroups.FirstAsync(x => x.Id == documentId, cancellationToken);

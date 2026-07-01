@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="Surtitodo.SurtitodoPOS.Applications.Frontends.SyncCenter.Views.Controls.Layout.Sidebar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:navigation="clr-namespace:Surtitodo.SurtitodoPOS.Applications.Frontends.SyncCenter.Views.Controls.Navigation"
+             xmlns:models="clr-namespace:Surtitodo.SurtitodoPOS.Applications.Frontends.SyncCenter.Models">
+
+    <Border Background="{DynamicResource SidebarBackgroundBrush}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1"/>
+            </Grid.ColumnDefinitions>
+
+            <Rectangle Grid.Column="1"
+                       Fill="{DynamicResource PrimaryBrush}"
+                       Opacity="0.35"/>
+
+            <DockPanel Grid.Column="0" Margin="18,24,18,20">
+
+                <StackPanel DockPanel.Dock="Bottom">
+                    <Rectangle Height="1" Margin="0,0,0,14"
+                               Fill="{DynamicResource BorderBrush}"/>
+                    <TextBlock HorizontalAlignment="Center"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               Text="Versión 1.0.0"/>
+                </StackPanel>
+
+                <StackPanel>
+
+                    <!-- MARCA -->
+                    <StackPanel Margin="0,0,0,32">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="✦"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,2"/>
+                            <TextBlock Text="SURTITODO"
+                                       FontFamily="Segoe UI Variable Display, Segoe UI"
+                                       FontSize="19"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Margin="0,5,0,0"
+                                   FontFamily="Segoe UI Variable Display, Segoe UI"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource TextBrush}"
+                                   Text="Sync Center"/>
+                    </StackPanel>
+
+                    <!-- SECCIÓN -->
+                    <TextBlock Margin="4,0,0,12"
+                               FontSize="10"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               Text="TAREAS"/>
+
+                    <navigation:NavigationItem
+                        x:Name="ItemEngine"
+                        Title="Agrupación de documentos"
+                        Status="{x:Static models:SyncModuleStatus.Stopped}"
+                        IsSelected="True"/>
+                    
+                    <navigation:NavigationItem
+                        x:Name="ItemSap"
+                        Title="Integración de documentos"
+                        Status="{x:Static models:SyncModuleStatus.Stopped}"
+                        IsSelected="False"/>
+
+
+
+                </StackPanel>
+            </DockPanel>
+        </Grid>
+    </Border>
+</UserControl>

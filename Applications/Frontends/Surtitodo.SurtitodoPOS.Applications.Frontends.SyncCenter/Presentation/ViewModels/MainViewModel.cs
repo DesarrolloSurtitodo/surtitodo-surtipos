@@ -6,6 +6,12 @@ partial class MainViewModel : ViewModelBase
 {
     public ObservableCollection<ModuleViewModel> Modules { get; } = [];
 
+    public ViewModelBase? CurrentPage
+    {
+        get;
+        set;
+    }
+
     public MainViewModel()
     {
         Modules.Add(new ModuleViewModel

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.17" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
 	  <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
 	  <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
@@ -18,6 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Surtitodo.POS.Integrations.DocumentGroupingToSap.Application\Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.csproj" />
     <ProjectReference Include="..\Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure\Surtitodo.POS.Integrations.DocumentGroupingToSap.Infrastructure.csproj" />
-	  <ProjectReference Include="..\..\..\Shared\SharedProcessMonitor\Surtitodo.POS.Shared.SharedProcessMonitor\Surtitodo.POS.Shared.SharedProcessMonitor.csproj" />
+	 <ProjectReference Include="..\..\..\Shared\SharedProcessMonitor\Surtitodo.POS.Shared.SharedProcessMonitor\Surtitodo.POS.Shared.SharedProcessMonitor.csproj" />
   </ItemGroup>
 </Project>

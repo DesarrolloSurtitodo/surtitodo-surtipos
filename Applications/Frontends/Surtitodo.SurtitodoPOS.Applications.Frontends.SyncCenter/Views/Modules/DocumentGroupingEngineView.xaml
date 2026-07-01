@@ -1,0 +1,194 @@
+﻿<UserControl x:Class="Surtitodo.SurtitodoPOS.Applications.Frontends.SyncCenter.Views.Modules.DocumentGroupingEngineView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:badges="clr-namespace:Surtitodo.SurtitodoPOS.Applications.Frontends.SyncCenter.Views.Controls.Badges"
+             xmlns:cards="clr-namespace:Surtitodo.SurtitodoPOS.Applications.Frontends.SyncCenter.Views.Controls.Cards"
+             xmlns:console="clr-namespace:Surtitodo.SurtitodoPOS.Applications.Frontends.SyncCenter.Views.Controls.Console">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+               HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,4,0,16">
+
+            <!-- Badge oculto para mantener compatibilidad con code-behind -->
+            <badges:StatusBadge x:Name="StatusBadgeControl"
+                 Visibility="Collapsed"/>
+
+            <!-- ══════════════════════════════════════
+              STAT CARDS — 4 columnas
+         ══════════════════════════════════════ -->
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <cards:StatisticCard Grid.Column="0"
+                 x:Name="CardProcesados"
+                 Title="PROCESADOS"
+                 Value="0"
+                 Subtitle="Total"
+                 AccentBrush="{DynamicResource TextSecondaryBrush}"/>
+
+                <cards:StatisticCard Grid.Column="1"
+                 x:Name="CardCorrectos"
+                 Title="CORRECTOS"
+                 Value="0"
+                 Subtitle="Sin errores"
+                 AccentBrush="{DynamicResource SuccessBrush}"/>
+
+                <cards:StatisticCard Grid.Column="2"
+                 x:Name="CardErrores"
+                 Title="ERRORES"
+                 Value="0"
+                 Subtitle="Fallidos"
+                 AccentBrush="{DynamicResource ErrorBrush}"/>
+
+                <cards:StatisticCard Grid.Column="3"
+                 x:Name="CardPendientes"
+                 Title="PENDIENTES"
+                 Value="0"
+                 Subtitle="En cola"
+                 Margin="0"
+                 AccentBrush="{DynamicResource WarningBrush}"/>
+            </Grid>
+
+            <!-- ══════════════════════════════════════
+              BOTONES DE ACCIÓN
+         ══════════════════════════════════════ -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+
+                <Button x:Name="BtnEjecutar"
+                     Style="{StaticResource Btn.Primary}"
+                     MinWidth="118">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="▶" FontSize="11" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Ejecutar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="BtnPausar"
+                     Style="{StaticResource Btn.Ghost}"
+                     MinWidth="108">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⏸" FontSize="11" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Pausar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="BtnReiniciar"
+                     Style="{StaticResource Btn.Ghost}"
+                     MinWidth="116">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="↻" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Reiniciar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="BtnLogs"
+                     Style="{StaticResource Btn.Ghost}"
+                     MinWidth="120">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📂" FontSize="11" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Abrir Logs" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="BtnLimpiar"
+                     Style="{StaticResource Btn.Danger}"
+                     MinWidth="148">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🗑" FontSize="11" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Limpiar consola" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+
+            <!-- ══════════════════════════════════════
+              CONSOLA — crece con contenido
+         ══════════════════════════════════════ -->
+            <console:ConsolePanel x:Name="Console"
+                               Title="CONSOLA DE ACTIVIDAD"
+                               MinHeight="120"
+                               MaxHeight="420"
+                               Margin="0,0,0,12"/>
+
+            <!-- ══════════════════════════════════════
+              BARRA DE LOTE
+         ══════════════════════════════════════ -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                 BorderBrush="{DynamicResource BorderBrush}"
+                 BorderThickness="1"
+                 CornerRadius="10"
+                 Padding="14,10"
+                 Margin="0,0,0,14">
+                <StackPanel>
+                    <Grid Margin="0,0,0,7">
+                        <TextBlock FontSize="12"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
+                                Text="Lote actual"/>
+                        <TextBlock x:Name="TxtBatchInfo"
+                                FontFamily="Cascadia Code, Consolas"
+                                FontSize="12"
+                                Foreground="{DynamicResource TextMutedBrush}"
+                                HorizontalAlignment="Right"
+                                Text="0/0 documentos"/>
+                    </Grid>
+                    <Border Background="{DynamicResource BorderBrush}"
+                         CornerRadius="3"
+                         Height="4">
+                        <Border x:Name="BatchProgressBar"
+                             Background="{DynamicResource PrimaryBrush}"
+                             CornerRadius="3"
+                             HorizontalAlignment="Left"
+                             Width="0"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- ══════════════════════════════════════
+              INFO FOOTER
+         ══════════════════════════════════════ -->
+            <StackPanel Orientation="Horizontal">
+
+                <TextBlock FontSize="12"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        Text="⏱  Intervalo:"/>
+                <TextBlock x:Name="TxtIntervalo"
+                        FontFamily="Cascadia Code, Consolas"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextBrush}"
+                        Margin="6,0,0,0"
+                        Text="30 s"/>
+
+                <Rectangle Width="1" Margin="16,1" Fill="{DynamicResource BorderBrush}"/>
+
+                <TextBlock FontSize="12"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        Text="Última ejecución:"/>
+                <TextBlock x:Name="TxtUltimaEjecucion"
+                        FontFamily="Cascadia Code, Consolas"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextBrush}"
+                        Margin="6,0,0,0"
+                        Text="--"/>
+
+                <Rectangle Width="1" Margin="16,1" Fill="{DynamicResource BorderBrush}"/>
+
+                <TextBlock FontSize="12"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        Text="⏰  Próxima ejecución en"/>
+                <!-- Color controlado por code-behind: muted en reposo, rojo en cuenta regresiva -->
+                <TextBlock x:Name="TxtProximaEjecucion"
+                        FontFamily="Cascadia Code, Consolas"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Margin="6,0,0,0"
+                        Text="--"/>
+
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

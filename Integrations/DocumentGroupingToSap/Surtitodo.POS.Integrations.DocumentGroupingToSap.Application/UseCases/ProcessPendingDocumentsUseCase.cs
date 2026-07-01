@@ -7,6 +7,7 @@ using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Pe
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.Sap;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Interfaces.UseCases;
 using Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.Options;
+using Surtitodo.POS.Shared.SharedProcessMonitor;
 
 namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
 {
@@ -17,7 +18,8 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
         ISapInvoiceService sapInvoiceService,
         IJsonFileStorage jsonFileStorage,
         IOptions<IntegrationOptions> options,
-        ILogger<ProcessPendingDocumentsUseCase> logger
+        ILogger<ProcessPendingDocumentsUseCase> logger,
+        WorkerEventChannel eventChannel
         ) : IProcessPendingDocumentsUseCase
     {
         private readonly IDocumentAgroupRepository _documentRepository = documentRepository;
@@ -27,6 +29,17 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
         private readonly IJsonFileStorage _jsonFileStorage = jsonFileStorage;
         private readonly IOptions<IntegrationOptions> _options = options;
         private readonly ILogger<ProcessPendingDocumentsUseCase> _logger = logger;
+        private readonly WorkerEventChannel _eventChannel = eventChannel;
+
+        private async Task Emit(WorkerEventType type, string message, string? numAtCard = null)
+        {
+            try
+            {
+                await _eventChannel.Writer.WriteAsync(
+                    new WorkerEvent(type, message, DateTime.Now, numAtCard));
+            }
+            catch { }
+        }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
@@ -36,7 +49,7 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
             // 2. Recorrer documentos
             foreach (var document in documents)
             {
-                Console.WriteLine($"Procesando documento {document.NumAtCard} de la tienda {document.WarehouseCode}");
+                await Emit(WorkerEventType.Info, $"Procesando {document.NumAtCard}", document.NumAtCard);
 
                 try
                 {
@@ -46,7 +59,7 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
                     // 4. Si existe, actualizamos en la BD de agrupación
                     if (existingInvoice is not null)
                     {
-                        Console.WriteLine($"Documento ya existe en SAP con DocNum {existingInvoice.DocNum} y DocEntry {existingInvoice.DocEntry}. Se procede a actualizar");
+                        await Emit(WorkerEventType.Warning, $"Ya existe en SAP — DocNum: {existingInvoice.DocNum} / DocEntry: {existingInvoice.DocEntry}", document.NumAtCard);
 
                         await _documentRepository
                             .MarkAsIntegrationAsync(
@@ -64,32 +77,37 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
 
                         continue;
                     }
-
-                    Console.WriteLine($"Consultando series de la tienda {301 /*document.WarehouseCode */} en SAP");
+                   
+                    await Emit(WorkerEventType.Info, $"Consultando series tienda {301 /*document.WarehouseCode */}", document.NumAtCard);
 
                     // 5. Validar si hay series disponibles
                     int series = await _sapSeriesLookupRepository.GetSeriesNumberAsync("301" /*document.WarehouseCode */, cancellationToken) 
                         ?? throw new SapSeriesNotFoundException(document.WarehouseCode, document.NumAtCard);
 
-                    Console.WriteLine($"Series obtenida {series}");
+                    await Emit(WorkerEventType.Info, $"Series obtenida: {series}", document.NumAtCard);
 
                     // 6. Si no existe, creamos el mapping
-                    Console.WriteLine($"Creando el request para el Service Layer");
+                    await Emit(WorkerEventType.Info, "Creando request para Service Layer", document.NumAtCard);
                     var documentRequest = RequestDocumentInvoiceMapper.ToRequest(document, series!);
 
 
                     // 7. Crear la factura en SAP
-                    Console.WriteLine($"Ingresando factura por el service layer");
+                    await Emit(WorkerEventType.Info, "Enviando factura al Service Layer...", document.NumAtCard);
                     var result = await _sapInvoiceService.CreateInvoiceAsync(documentRequest, cancellationToken);
 
+                    if (result.Success)
+                        await Emit(WorkerEventType.Success, $"Factura creada — DocEntry: {result.SapDocEntry} / DocNum: {result.SapDocNum}", document.NumAtCard);
+                    else
+                        await Emit(WorkerEventType.Error, $"SAP rechazó la factura: {result.ErrorMessage}", document.NumAtCard);
+
                     // 8. Creamos los files
-                    Console.WriteLine($"Creando los files de seguimiento");
+                    await Emit(WorkerEventType.Info, "Guardando archivos de seguimiento", document.NumAtCard);
                     var requestFile = await _jsonFileStorage.SaveRequestAsync(document.NumAtCard, result.RequestJson, cancellationToken);
                     var responseFile = await _jsonFileStorage.SaveResponseAsync(document.NumAtCard, result.ResponseJson, cancellationToken);
 
 
                     // 8. Actualizamos en la BD de agrupación
-                    Console.WriteLine($"Actualizando en la base de datos de agrupacion");
+                    await Emit(WorkerEventType.Info, "Actualizando estado en BD", document.NumAtCard);
                     await _documentRepository
                         .MarkAsIntegrationAsync(
                             document.Id,
@@ -110,6 +128,8 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
                 {
                     _logger.LogWarning(ex, ex.Message);
 
+                    await Emit(WorkerEventType.Error, $"Serie no encontrada para tienda {document.WarehouseCode}", document.NumAtCard);
+
                     await _documentRepository.MarkAsIntegrationAsync(
                         document.Id,
                         -1,
@@ -126,6 +146,8 @@ namespace Surtitodo.POS.Integrations.DocumentGroupingToSap.Application.UseCases
                 catch (Exception ex)
                 {
                     _logger.LogError(ex,"Error procesando documento {NumAtCard}", document.NumAtCard);
+
+                    await Emit(WorkerEventType.Error, ex.Message[..Math.Min(ex.Message.Length, 120)], document.NumAtCard);
 
                     await _documentRepository.MarkAsIntegrationAsync(
                         document.Id,

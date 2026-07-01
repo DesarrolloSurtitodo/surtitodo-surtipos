@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain\Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.csproj" />
+	  <ProjectReference Include="..\..\..\Shared\SharedProcessMonitor\Surtitodo.POS.Shared.SharedProcessMonitor\Surtitodo.POS.Shared.SharedProcessMonitor.csproj" />
   </ItemGroup>
 
 </Project>

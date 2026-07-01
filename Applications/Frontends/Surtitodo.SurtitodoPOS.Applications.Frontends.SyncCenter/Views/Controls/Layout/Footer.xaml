@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="Surtitodo.SurtitodoPOS.Applications.Frontends.SyncCenter.Views.Controls.Layout.Footer"
+             x:Name="Root"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border Padding="0,15,0,0">
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+
+                <ColumnDefinition Width="*"/>
+
+                <ColumnDefinition Width="Auto"/>
+
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                FontSize="12"
+                Foreground="{DynamicResource TextSecondaryBrush}"
+                Text="{Binding Copyright, ElementName=Root}" />
+
+            <TextBlock
+                Grid.Column="1"
+                FontSize="12"
+                Foreground="{DynamicResource TextSecondaryBrush}"
+                Text="{Binding Version, ElementName=Root}" />
+
+        </Grid>
+
+    </Border>
+
+</UserControl>

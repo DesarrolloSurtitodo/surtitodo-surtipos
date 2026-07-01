@@ -32,6 +32,26 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Infrastructure.Persi
             return await _connection.QueryAsync<Documents>(command);
         }
 
+        public async Task<(int Procesados, int Correctos, int Errores, int Pendientes)> GetMetricsAsync(CancellationToken ct = default)
+        {
+            const string sql = @"
+            SELECT
+                AGROUP_STATUS_CODE AS StatusCode,
+                COUNT(*) AS Total
+            FROM dbo.DOCUMENTS
+            GROUP BY AGROUP_STATUS_CODE";
+
+            var command = new CommandDefinition(sql, cancellationToken: ct);
+            var rows = await _connection.QueryAsync<(string StatusCode, int Total)>(command);
+
+            int correctos = rows.FirstOrDefault(r => r.StatusCode == "T").Total;
+            int errores = rows.FirstOrDefault(r => r.StatusCode == "E").Total;
+            int pendientes = rows.FirstOrDefault(r => r.StatusCode == "P").Total;
+            int procesados = correctos + errores;
+
+            return (procesados, correctos, errores, pendientes);
+        }
+
         public async Task UpdateGroupStatusAsync(IEnumerable<int> ticodiList, string bocodi, string cacodi, string tipdoc, string statusCode, long? groupedDocumentId, 
             string? message, string? logFile, CancellationToken ct = default)
         {

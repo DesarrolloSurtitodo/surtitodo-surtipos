@@ -11,5 +11,7 @@ namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfac
             string statusCode, long? groupedDocumentId,
             string? message, string? logFile,
             CancellationToken ct = default);
+
+        Task<(int Procesados, int Correctos, int Errores, int Pendientes)> GetMetricsAsync(CancellationToken ct = default);
     }
 }

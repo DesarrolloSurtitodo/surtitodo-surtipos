@@ -6,17 +6,33 @@ using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Interfaces.S
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.Mappers;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping;
 using Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Source;
+using Surtitodo.POS.Shared.SharedProcessMonitor;
 using groupingEngine = Surtitodo.POS.SyncServices.DocumentGroupingEngine.Domain.Grouping.DocumentGroupingEngine;
 
 namespace Surtitodo.POS.SyncServices.DocumentGroupingEngine.Application.UseCases.GroupDocuments;
 
-public class GroupDocumentsUseCase(IDocumentsRepository documentsRepo, IDocumentsLinesRepository linesRepo, IUnitOfWork unitOfWork,
-    IOptions<GroupingSettings> settings) : IGroupingOrchestrator
+public class GroupDocumentsUseCase(
+    IDocumentsRepository documentsRepo,
+    IDocumentsLinesRepository linesRepo,
+    IUnitOfWork unitOfWork,
+    IOptions<GroupingSettings> settings,
+    WorkerEventChannel eventChannel) : IGroupingOrchestrator
 {
     private readonly IDocumentsRepository _documentsRepo = documentsRepo;
     private readonly IDocumentsLinesRepository _linesRepo = linesRepo;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly GroupingSettings _settings = settings.Value;
+    private readonly WorkerEventChannel _eventChannel = eventChannel;
+
+    private async Task Emit(WorkerEventType type, string message, string? numAtCard = null)
+    {
+        try
+        {
+            await _eventChannel.Writer.WriteAsync(
+                new WorkerEvent(type, message, DateTime.Now, numAtCard));
+        }
+        catch { }
+    }
 
     public async Task ExecuteAsync(CancellationToken ct = default)
     {
@@ -32,17 +48,23 @@ public class GroupDocumentsUseCase(IDocumentsRepository documentsRepo, IDocument
         {
             await _documentsRepo.UpdateGroupStatusAsync(
                 [doc.TICODI],
-                doc.BOCODI, 
-                doc.CACODI, 
+                doc.BOCODI,
+                doc.CACODI,
                 doc.TIPDOC,
                 statusCode: "T",
                 groupedDocumentId: agroupId,
                 message: "Re-sincronizado desde trazabilidad",
                 logFile: null,
                 ct: ct);
+
+            await Emit(WorkerEventType.Info, $"El documento {doc.BOCODI} - {doc.CACODI} - {doc.TICODI} ya se encuentra en un grupo con ID {agroupId}");
         }
 
-        if (pending.Count == 0) return;
+        if (pending.Count == 0)
+        {
+            await Emit(WorkerEventType.Info, "Sin documentos pendientes por agrupar.");
+            return;
+        }
 
         // 3. Agrupar solo los pendientes
         var group = groupingEngine.BuildNextGroup(pending, _settings.MaxGroupAmount);
@@ -51,7 +73,7 @@ public class GroupDocumentsUseCase(IDocumentsRepository documentsRepo, IDocument
         // 4. Generar NumAtCard
         var numAtCard = DocumentGroupMapper.BuildNumAtCard(group.TIPDOC, group.BOCODI, group.CACODI);
 
-        Console.WriteLine($"Procesando documento {numAtCard}");
+        await Emit(WorkerEventType.Info, $"Procesando {numAtCard}", numAtCard);
 
         try
         {
@@ -61,20 +83,18 @@ public class GroupDocumentsUseCase(IDocumentsRepository documentsRepo, IDocument
             // 6. Mapear — el mapper construye documento + líneas + trazas juntos
             var targetDoc = DocumentGroupMapper.ToTarget(group, lines, numAtCard);
 
-            // 7. Persistir con atomicidad total — documento + líneas + trazas
-            //    en una sola transacción. EF resuelve todas las FK por navegación.
+            // 7. Persistir con atomicidad total
             await _unitOfWork.BeginAsync(ct);
             await _unitOfWork.GroupedDocuments.InsertAsync(targetDoc, ct);
             await _unitOfWork.CommitAsync(ct);
 
-            // Id disponible tras el Commit
             var groupedId = targetDoc.Id;
 
-            // 8. Actualizar Source — fuera de la transacción Target
+            // 8. Actualizar Source
             await _documentsRepo.UpdateGroupStatusAsync(
                 group.MemberKeys,
-                group.BOCODI, 
-                group.CACODI, 
+                group.BOCODI,
+                group.CACODI,
                 group.TIPDOC,
                 statusCode: "T",
                 groupedDocumentId: groupedId,
@@ -82,18 +102,16 @@ public class GroupDocumentsUseCase(IDocumentsRepository documentsRepo, IDocument
                 logFile: null,
                 ct: ct);
 
-            Console.WriteLine($"Agrupación CORRECTA {numAtCard}. ID de agrupacion: {groupedId}");
-            Console.WriteLine();
+            await Emit(WorkerEventType.Success, $"Agrupación correcta — DocEntry: {groupedId}", numAtCard);
         }
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(ct);
 
-            Console.WriteLine($"Agrupación ERROR {numAtCard}. Mensaje de error: {ex.Message}");
-            Console.WriteLine();
+            await Emit(WorkerEventType.Error, $"Agrupación con error: {ex.Message}", numAtCard);
 
             throw new GroupingException(
-                message: ex.Message,
+                //message: ex.Message,
                 numAtCard: numAtCard,
                 memberKeys: group.MemberKeys,
                 bocodi: group.BOCODI,
@@ -103,8 +121,8 @@ public class GroupDocumentsUseCase(IDocumentsRepository documentsRepo, IDocument
         }
     }
 
-    private async Task<(List<(Documents doc, long agroupId)> alreadyProcessed, List<Documents> pending)>SplitByTraceAsync(IEnumerable<Documents> candidates, 
-        CancellationToken ct)
+    private async Task<(List<(Documents doc, long agroupId)> alreadyProcessed, List<Documents> pending)> SplitByTraceAsync(
+        IEnumerable<Documents> candidates, CancellationToken ct)
     {
         var alreadyProcessed = new List<(Documents, long)>();
         var pending = new List<Documents>();

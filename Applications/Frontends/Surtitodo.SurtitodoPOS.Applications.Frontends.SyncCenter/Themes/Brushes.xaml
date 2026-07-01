@@ -1,0 +1,28 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="PrimaryBrush"              Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush"          Color="{StaticResource PrimaryDarkColor}"/>
+    <SolidColorBrush x:Key="PrimaryHoverBrush"         Color="{StaticResource PrimaryHoverColor}"/>
+    <SolidColorBrush x:Key="WindowBackgroundBrush"     Color="{StaticResource WindowBackgroundColor}"/>
+    <SolidColorBrush x:Key="SidebarBackgroundBrush"    Color="{StaticResource SidebarBackgroundColor}"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush"       Color="{StaticResource CardBackgroundColor}"/>
+    <SolidColorBrush x:Key="CardBackgroundHoverBrush"  Color="{StaticResource CardBackgroundHoverColor}"/>
+    <SolidColorBrush x:Key="ConsoleBgBrush"            Color="{StaticResource ConsoleBgColor}"/>
+    <SolidColorBrush x:Key="BorderBrush"               Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="BorderAccentBrush"         Color="{StaticResource BorderAccentColor}"/>
+    <SolidColorBrush x:Key="TextBrush"                 Color="{StaticResource TextColor}"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush"        Color="{StaticResource TextSecondaryColor}"/>
+    <SolidColorBrush x:Key="TextMutedBrush"            Color="{StaticResource TextMutedColor}"/>
+    <SolidColorBrush x:Key="SuccessBrush"              Color="{StaticResource SuccessColor}"/>
+    <SolidColorBrush x:Key="WarningBrush"              Color="{StaticResource WarningColor}"/>
+    <SolidColorBrush x:Key="ErrorBrush"                Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="StoppedBrush"              Color="{StaticResource StoppedColor}"/>
+    <SolidColorBrush x:Key="InfoBrush"                 Color="{StaticResource InfoColor}"/>
+    <SolidColorBrush x:Key="ButtonGhostBgBrush"        Color="{StaticResource ButtonGhostBgColor}"/>
+    <SolidColorBrush x:Key="ButtonGhostHoverBrush"     Color="{StaticResource ButtonGhostHoverColor}"/>
+    <SolidColorBrush x:Key="ButtonDangerBgBrush"       Color="{StaticResource ButtonDangerBgColor}"/>
+    <SolidColorBrush x:Key="TransparentBrush"          Color="Transparent"/>
+
+</ResourceDictionary>
